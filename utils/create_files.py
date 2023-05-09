@@ -24,7 +24,7 @@ def create_files():
 
     for key, value in settings.items():
         if key not in current_settings:
-            current_settings.update({key: value})
+            current_settings[key] = value
 
     write_json(config.SETTINGS_FILE, current_settings, 2)
 
