@@ -50,13 +50,12 @@ async def run(addresses: List[str], proxies: str or List[str]):
 def parse_balances(loop):
     asyncio.set_event_loop(loop)
 
-    addresses = []
-    for address in read_lines(config.ADDRESSES_FILE, True):
-        if re.match('0x' + r'\w' * 40, address):
-            addresses.append(address)
-
-    addresses = list(dict.fromkeys(addresses))
-    if addresses:
+    addresses = [
+        address
+        for address in read_lines(config.ADDRESSES_FILE, True)
+        if re.match('0x' + r'\w' * 40, address)
+    ]
+    if addresses := list(dict.fromkeys(addresses)):
         not_parsed = []
         header = 'Checking time: {checking_time}\nTotal addresses: {total_addresses}\nTotal balance: ${total_usd_value}\n'
         text = ''
@@ -69,7 +68,7 @@ def parse_balances(loop):
             responses = loop.run_until_complete(future)
             results: Dict[str, Optional[Dict[str, Chain]]] = {}
             for response in responses:
-                results.update(response)
+                results |= response
 
             for address in addresses:
                 balances = results.get(address)
